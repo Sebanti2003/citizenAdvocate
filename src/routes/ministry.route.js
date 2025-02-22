@@ -17,7 +17,7 @@ router.route("/auth/signup").post(signup);
 router.route("/auth/login").post(login);
 router.route("/auth/logout").get(logout);
 
-router.route("/me").get(sessionProtected2, ministryroleCheck, getministryinfo);
+router.route("/me").get(sessionProtected2, getministryinfo);
 
 router.route("/getallministries").get(getallministries);
 router

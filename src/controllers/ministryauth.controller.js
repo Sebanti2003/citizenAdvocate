@@ -68,6 +68,8 @@ export const login = async (req, res) => {
     }
 
     req.session.ministry = ministry;
+    console.log(req.session.ministry);
+    
 
     return res.status(200).json({
       message: "Ministry login successful",

@@ -34,7 +34,7 @@ router
   .route("/ministryofroadtransportandhighwayspostcomplaint")
   .post(sessionProtected, ministryofroadtransportandhighwayspostcomplaint);
 
-router.route("/eachDepartmentalComplaints/:departmentalid").get(sessionProtected2,getdepartmentalcomplaints);
+router.route("/eachDepartmentalComplaints").get(sessionProtected2,getdepartmentalcomplaints);
 
 
 export default router;

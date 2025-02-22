@@ -24,6 +24,8 @@ export const sessionProtected = (req, res, next) => {
 export const sessionProtected2 = (req, res, next) => {
   try {
     // Check if session user exists
+    console.log(req.session.ministry);
+    
     if (!req.session.ministry) {
       return res.status(403).json({
         message: "Session is missing! Please log in again.",

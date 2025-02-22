@@ -1,6 +1,7 @@
 import Complaint from "../models/complaint.model.js";
 import Ministry from "../models/ministry.model.js";
 import mongoose from "mongoose";
+import User from "../models/user.model.js";
 
 export const ministryofrailwaypostcomplaint = async (req, res) => {
   try {
@@ -317,45 +318,79 @@ export const geteachcomplaint = async (req, res) => {
   }
 };
 
+
+// export const getdepartmentalcomplaints = async (req, res) => {
+//   try {
+//     const departmentalid = req.ministry._id;
+
+//     const department = await Ministry.findById(departmentalid);
+//     if (!department) {
+//       return res.status(404).json({ success: false, message: "Department not found" });
+//     }
+
+//     // Fetch all complaints related to this department
+//     const complaints = await Complaint.find({ ministry: departmentalid });
+//     const newcomplaints=complaints.map(async(complaint) => {
+//       const {name}=await User.findById(complaint.person).select('name');
+//       return {
+
+//       }
+//     })
+//     // Extract unique categories
+//     const uniqueCategories = [...new Set(complaints.map(complaint => complaint.category))];
+
+//     res.status(200).json({
+//       success: true,
+//       message: `${department.departmentalname} Complaints fetched successfully`,
+//       categories: uniqueCategories,
+//       complaints
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ success: false, message: "Error fetching departmental complaints" });
+//   }
+// };
 export const getdepartmentalcomplaints = async (req, res) => {
   try {
     const departmentalid = req.ministry._id;
 
     const department = await Ministry.findById(departmentalid);
     if (!department) {
-      return res.status(404).json({ message: "Department not found" });
+      return res.status(404).json({ success: false, message: "Department not found" });
     }
 
-    const complaintsData = await Complaint.aggregate([
-      { $match: { ministry: new mongoose.Types.ObjectId(departmentalid) } },
-      {
-        $group: {
-          _id: "$category",
-          count: { $sum: 1 },
-          complaints: { $push: "$$ROOT" },
-        },
-      },
-      { $sort: { count: -1 } },
-      {
-        $project: {
-          _id: 0,
-          category: "$_id",
-          count: 1,
-          complaints: 1,
-        },
-      },
-    ]);
+    // Fetch all complaints related to this department
+    const complaints = await Complaint.find({ ministry: departmentalid });
+
+    // Map over complaints and fetch user names
+    const newComplaints = await Promise.all(
+      complaints.map(async (complaint) => {
+        const user = await User.findById(complaint.person).select('name'); 
+        return {
+          _id: complaint._id,
+          category: complaint.category,
+          description: complaint.description,
+          person: user ? user.name : "Unknown", // If user not found, default to "Unknown"
+          createdAt: complaint.createdAt
+        };
+      })
+    );
+
+    // Extract unique categories
+    const uniqueCategories = [...new Set(complaints.map((complaint) => complaint.category))];
 
     res.status(200).json({
+      success: true,
       message: `${department.departmentalname} Complaints fetched successfully`,
-      categories: complaintsData.map((data) => data.category),
-      complaints: complaintsData,
+      categories: uniqueCategories,
+      complaints: newComplaints, // Send updated complaints with names
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error fetching departmental complaints" });
+    res.status(500).json({ success: false, message: "Error fetching departmental complaints" });
   }
 };
+
 
 export const delcomplaint = async (req, res) => {
   try {
