@@ -14,8 +14,20 @@ export const ministryofrailwaypostcomplaint = async (req, res) => {
       date,
       description,
       category,
-      document,
+      document = "",
     } = req.body;
+    console.log("====================================");
+    console.log({
+      person,
+      ministry,
+      trainNumber,
+      trainName,
+      pnr,
+      date,
+      description,
+      category,
+    });
+    console.log("====================================");
     if (
       !person ||
       !trainNumber ||
@@ -23,8 +35,7 @@ export const ministryofrailwaypostcomplaint = async (req, res) => {
       !pnr ||
       !date ||
       !description ||
-      !category ||
-      !document
+      !category
     ) {
       return res.status(400).json({ message: "Please fill all the fields" });
     }
@@ -62,7 +73,7 @@ export const ministryofConsumerAffairspostcomplaint = async (req, res) => {
       date,
       description,
       category,
-      document,
+      document="imgtoday.jpg",
     } = req.body;
     if (
       !person ||
@@ -71,8 +82,7 @@ export const ministryofConsumerAffairspostcomplaint = async (req, res) => {
       !productname ||
       !date ||
       !description ||
-      !category ||
-      !document
+      !category
     ) {
       return res.status(400).json({ message: "Please fill all the fields" });
     }
@@ -160,8 +170,20 @@ export const ministryofroadtransportandhighwayspostcomplaint = async (
       date,
       description,
       category,
-      document,
+      document = "imgtoday.jpg",
     } = req.body;
+    console.log("====================================");
+    console.log({
+      person,
+      ministry,
+      transportservicenumber,
+      transportservicename,
+      date,
+      description,
+      category,
+      document,
+    });
+    console.log("====================================");
     if (
       !person ||
       !transportservicenumber ||
@@ -207,7 +229,7 @@ export const ministryofHealthFamilyWelfarepostcomplaint = async (req, res) => {
       date,
       description,
       category,
-      document,
+      document="imgtoday.jpg",
     } = req.body;
     if (
       !person ||
@@ -318,7 +340,6 @@ export const geteachcomplaint = async (req, res) => {
   }
 };
 
-
 // export const getdepartmentalcomplaints = async (req, res) => {
 //   try {
 //     const departmentalid = req.ministry._id;
@@ -356,7 +377,9 @@ export const getdepartmentalcomplaints = async (req, res) => {
 
     const department = await Ministry.findById(departmentalid);
     if (!department) {
-      return res.status(404).json({ success: false, message: "Department not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Department not found" });
     }
 
     // Fetch all complaints related to this department
@@ -365,19 +388,22 @@ export const getdepartmentalcomplaints = async (req, res) => {
     // Map over complaints and fetch user names
     const newComplaints = await Promise.all(
       complaints.map(async (complaint) => {
-        const user = await User.findById(complaint.person).select('name'); 
+        const user = await User.findById(complaint.person).select("name");
         return {
           _id: complaint._id,
           category: complaint.category,
           description: complaint.description,
-          person: user ? user.name : "Unknown", // If user not found, default to "Unknown"
-          createdAt: complaint.createdAt
+          person: user.name, // If user not found, default to "Unknown"
+          createdAt: complaint.createdAt,
+          ...complaint._doc,
         };
       })
     );
 
     // Extract unique categories
-    const uniqueCategories = [...new Set(complaints.map((complaint) => complaint.category))];
+    const uniqueCategories = [
+      ...new Set(complaints.map((complaint) => complaint.category)),
+    ];
 
     res.status(200).json({
       success: true,
@@ -387,10 +413,14 @@ export const getdepartmentalcomplaints = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Error fetching departmental complaints" });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Error fetching departmental complaints",
+      });
   }
 };
-
 
 export const delcomplaint = async (req, res) => {
   try {

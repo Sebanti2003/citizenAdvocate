@@ -11,6 +11,7 @@ import complaintrouter from "./routes/complaints.route.js";
 import notificationrouter from "./routes/notifications.route.js";
 import http from "http";
 import { Server } from "socket.io";
+import { createmployee, getallemployees } from "./controllers/employee.controller.js";
 
 configDotenv();
 
@@ -93,6 +94,8 @@ app.use("/api/v1/user", userrouter);
 app.use("/api/v1/ministry", ministryrouter);
 app.use("/api/v1/complaints", complaintrouter);
 app.use("/api/v1", notificationrouter);
+app.post('/employeeregistration',createmployee);
+app.get('/getallemployees',getallemployees);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the API");
