@@ -1,54 +1,51 @@
-import Govemployee from "../models/govemployee.model.js";
-
+import Employee from "../models/Employee.js";
+import bcrypt from "bcryptjs";
 export const createmployee = async (req, res) => {
+  const {
+    name,
+    email,
+    phone,
+    department,
+    designation,
+    employeeId,
+    password,
+    address,
+    dateOfJoining,
+  } = req.body;
+
   try {
-    const {
+    const existingEmployee = await Employee.findOne({ email });
+    if (existingEmployee) {
+      return res.status(400).json({ message: "Employee already exists" });
+    }
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const newEmployee = new Employee({
       name,
       email,
-      password,
-      state,
-      phonenumber,
-      location,
+      phone,
+      department,
       designation,
-      ministry_id,
-    } = req.body;
-    const employee = await Employee.create({
-      name,
-      email,
-      password,
-      state,
-      phonenumber,
-      location,
-      designation,
-      ministry_id,
+      employeeId,
+      password: hashedPassword,
+      address,
+      dateOfJoining,
     });
-    return res.status(200).json({
-      message: "Employee created successfully",
-      employee: employee,
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      message: "Internal Server Error in createmployee",
-      success: false,
-      error: error.message,
-    });
+
+    await newEmployee.save();
+
+    res.status(201).json({ message: "Employee registered successfully" });
+  } catch (err) {
+    console.error("Error registering employee:", err);
+    res.status(500).json({ message: "Error registering employee" });
   }
 };
-
 export const getallemployees = async (req, res) => {
   try {
-    const employees = await Govemployee.find();
-    return res.status(200).json({
-      message: "All employees fetched successfully",
-      employees: employees,
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      message: "Internal Server Error in getallemployees",
-      success: false,
-      error: error.message,
-    });
+    const employees = await Employee.find();
+    res.status(200).json(employees);
+  } catch (err) {
+    console.error("Error fetching employees:", err);
+    res.status(500).json({ message: "Error fetching employees" });
   }
 };
