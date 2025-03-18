@@ -11,7 +11,10 @@ import complaintrouter from "./routes/complaints.route.js";
 import notificationrouter from "./routes/notifications.route.js";
 import http from "http";
 import { Server } from "socket.io";
-import { createmployee, getallemployees } from "./controllers/employee.controller.js";
+import {
+  createmployee,
+  getallemployees,
+} from "./controllers/employee.controller.js";
 
 configDotenv();
 
@@ -85,7 +88,8 @@ app.use(
       secure: process.env.NODE_ENV === "production", // false in development mode
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
-      sameSite: "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
     },
   })
 );
@@ -94,8 +98,8 @@ app.use("/api/v1/user", userrouter);
 app.use("/api/v1/ministry", ministryrouter);
 app.use("/api/v1/complaints", complaintrouter);
 app.use("/api/v1", notificationrouter);
-app.post('/employeeregistration',createmployee);
-app.get('/getallemployees',getallemployees);
+app.post("/employeeregistration", createmployee);
+app.get("/getallemployees", getallemployees);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the API");
