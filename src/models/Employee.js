@@ -1,6 +1,6 @@
-// models/Employee.js
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+
 
 const employeeSchema = new mongoose.Schema({
     name: {
@@ -65,4 +65,4 @@ employeeSchema.methods.comparePassword = async function (candidatePassword) {
 
 const Employee = mongoose.model("Employee", employeeSchema);
 
-module.exports = Employee;
+export default Employee;

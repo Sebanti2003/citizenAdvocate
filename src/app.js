@@ -19,7 +19,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174","https://citizens-advocatefrontend.vercel.app"],
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -49,6 +49,7 @@ io.on("connection", (socket) => {
 app.set("socketio", io);
 app.set("userSockets", userSockets);
 
+// Middleware
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
@@ -59,7 +60,6 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5175",
-  "https://citizens-advocatefrontend.vercel.app"
 ];
 
 app.use(
@@ -93,11 +93,14 @@ app.use(
   })
 );
 
+
 app.use("/api/v1/user", userrouter);
 app.use("/api/v1/ministry", ministryrouter);
 app.use("/api/v1/complaints", complaintrouter);
 app.use("/api/v1/notifications", notificationrouter);
 app.use("/api/v1/employees", employeerouter); 
+
+// Default route
 app.get("/", (req, res) => {
   res.send("Welcome to the API");
 });
