@@ -23,6 +23,7 @@ const io = new Server(server, {
       "http://localhost:5173",
       "http://localhost:5174",
       "https://citizens-advocatefrontend.vercel.app",
+      "https://citiadvofront.onrender.com"
  
     ],
     methods: ["GET", "POST"],
@@ -63,6 +64,7 @@ app.set("trust proxy", 1);
 
 const allowedOrigins = [
   "https://citizens-advocatefrontend.vercel.app",
+  "https://citiadvofront.onrender.com",
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5175",
