@@ -9,7 +9,7 @@ import userrouter from "./routes/user.route.js";
 import ministryrouter from "./routes/ministry.route.js";
 import complaintrouter from "./routes/complaints.route.js";
 import notificationrouter from "./routes/notifications.route.js";
-import employeerouter from "./routes/employee.route.js"; 
+import employeerouter from "./routes/employee.route.js";
 import http from "http";
 import { Server } from "socket.io";
 
@@ -19,7 +19,11 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "https://citizens-advocatefrontend.vercel.app/",
+    ],
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -57,6 +61,7 @@ app.use(express.json());
 app.set("trust proxy", 1);
 
 const allowedOrigins = [
+  "https://citizens-advocatefrontend.vercel.app/",
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5175",
@@ -88,17 +93,16 @@ app.use(
       secure: process.env.NODE_ENV === "production",
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
-      sameSite: "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     },
   })
 );
-
 
 app.use("/api/v1/user", userrouter);
 app.use("/api/v1/ministry", ministryrouter);
 app.use("/api/v1/complaints", complaintrouter);
 app.use("/api/v1/notifications", notificationrouter);
-app.use("/api/v1/employees", employeerouter); 
+app.use("/api/v1/employees", employeerouter);
 
 // Default route
 app.get("/", (req, res) => {
