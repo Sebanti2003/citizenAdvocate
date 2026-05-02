@@ -16,7 +16,7 @@ const ministriesData = [
     },
     {
       "departmentalname": "Ministry of Women and Child Safety",
-      "departmentalid": "WOMEN004",
+      "departmentalsid": "WOMEN004",
       "password": "MWC556"
     },
     {
