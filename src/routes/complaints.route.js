@@ -9,6 +9,8 @@ import {
   ministryofrailwaypostcomplaint,
   ministryofroadtransportandhighwayspostcomplaint,
   ministryofWomenandChildrenDevelopmentpostcomplaint,
+  resetDepartmentalComplaint,
+  updateDepartmentalComplaint,
 } from "../controllers/complaints.controller.js";
 import { sessionProtected, sessionProtected2 } from "../middlewares/cookieprotected.middleware.js";
 
@@ -35,6 +37,12 @@ router
   .post(sessionProtected, ministryofroadtransportandhighwayspostcomplaint);
 
 router.route("/eachDepartmentalComplaints").get(sessionProtected2,getdepartmentalcomplaints);
+router
+  .route("/departmentalcomplaint/:id")
+  .patch(sessionProtected2, updateDepartmentalComplaint);
+router
+  .route("/departmentalcomplaint/:id/reset")
+  .delete(sessionProtected2, resetDepartmentalComplaint);
 
 
 export default router;

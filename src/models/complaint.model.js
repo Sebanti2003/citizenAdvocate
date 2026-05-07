@@ -76,6 +76,14 @@ const complaintSchema = new mongoose.Schema(
     document: {
       type: String,
     },
+    ministryComment: {
+      type: String,
+      default: "",
+    },
+    isResetByMinistry: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

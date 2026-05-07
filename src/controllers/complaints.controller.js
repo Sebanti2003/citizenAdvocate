@@ -433,3 +433,85 @@ export const delcomplaint = async (req, res) => {
     res.status(500).json({ message: "Error deleting complaint" });
   }
 };
+
+export const updateDepartmentalComplaint = async (req, res) => {
+  try {
+    const departmentalid = req.ministry._id;
+    const complaintId = req.params.id;
+    const { status, ministryComment } = req.body;
+
+    const complaint = await Complaint.findOne({
+      _id: complaintId,
+      ministry: departmentalid,
+    });
+
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: "Complaint not found for this ministry",
+      });
+    }
+
+    const allowedStatuses = ["pending", "addresed", "rejected"];
+    if (status && !allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status value",
+      });
+    }
+
+    if (typeof status === "string") {
+      complaint.status = status;
+    }
+
+    if (typeof ministryComment === "string") {
+      complaint.ministryComment = ministryComment.trim();
+    }
+
+    await complaint.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Complaint updated successfully",
+      complaint,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error updating complaint",
+    });
+  }
+};
+
+export const resetDepartmentalComplaint = async (req, res) => {
+  try {
+    const departmentalid = req.ministry._id;
+    const complaintId = req.params.id;
+
+    const complaint = await Complaint.findOne({
+      _id: complaintId,
+      ministry: departmentalid,
+    });
+
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: "Complaint not found for this ministry",
+      });
+    }
+
+    complaint.isResetByMinistry = true;
+    await complaint.save();
+    await Complaint.findByIdAndDelete(complaintId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Complaint reset successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error resetting complaint",
+    });
+  }
+};
